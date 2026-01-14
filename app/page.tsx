@@ -147,13 +147,29 @@ export default function Home() {
     }
   };
 
+  // Check.gif 이미지 미리 로드 (신청 완료 모달이 즉시 표시되도록)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // link 태그로 프리로드
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.href = "/check.gif";
+      link.as = "image";
+      document.head.appendChild(link);
+
+      // Image 객체로도 미리 로드 (이중 보장)
+      const img = document.createElement("img");
+      img.src = "/check.gif";
+    }
+  }, []);
+
   // URL 파라미터에서 utm_source 읽어서 clickSource 설정
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const utmSource = params.get("utm_source");
       const materialId = params.get("material_id");
-      
+
       if (utmSource) {
         // 소재 번호가 있으면 함께 포함하여 추적
         if (materialId) {
@@ -166,24 +182,32 @@ export default function Home() {
   }, []);
 
   // 모달 열기 핸들러 (URL 파라미터가 있으면 우선시)
-  const handleOpenModal = (defaultSource: string) => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const utmSource = params.get("utm_source");
-      const materialId = params.get("material_id");
-      
-      if (utmSource) {
-        // 소재 번호가 있으면 함께 포함하여 추적
-        if (materialId) {
-          setClickSource(`${utmSource}_material_${materialId}`);
+  const handleOpenModal = (
+    defaultSource: string,
+    trackSource: boolean = true
+  ) => {
+    if (trackSource) {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const utmSource = params.get("utm_source");
+        const materialId = params.get("material_id");
+
+        if (utmSource) {
+          // 소재 번호가 있으면 함께 포함하여 추적
+          if (materialId) {
+            setClickSource(`${utmSource}_material_${materialId}`);
+          } else {
+            setClickSource(utmSource);
+          }
         } else {
-          setClickSource(utmSource);
+          setClickSource(defaultSource);
         }
       } else {
         setClickSource(defaultSource);
       }
     } else {
-      setClickSource(defaultSource);
+      // 추적하지 않는 경우 (헤더 클릭 등)
+      setClickSource("");
     }
     setShowModal(true);
   };
@@ -225,7 +249,14 @@ export default function Home() {
     <div className={styles.layout_wrapper}>
       <div className={styles.header_gnb}>
         <div className={styles.header_wrapper}>
-          <img src="/baro_logo.png" alt="logo" className={styles.baro_logo} />
+          <img
+            src="/baro_logo.png"
+            alt="logo"
+            className={styles.baro_logo}
+            onClick={() => handleOpenModal("", false)}
+            style={{ cursor: "pointer" }}
+            draggable="false"
+          />
           <button
             className={styles.hamburger_button}
             aria-label={showMenu ? "닫기" : "메뉴"}
@@ -531,6 +562,8 @@ export default function Home() {
                 src="/check.gif"
                 alt="신청 완료"
                 className={styles.completed_modal_image}
+                loading="eager"
+                decoding="async"
               />
               <h2 className={styles.completed_modal_title}>
                 신청이 완료되었습니다
