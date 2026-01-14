@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-// 환경 변수가 없을 때를 대비한 클라이언트 생성
 const getSupabaseClient = () => {
   if (!supabaseUrl || !supabaseServiceKey) {
     return null
@@ -20,24 +19,15 @@ const getSupabaseClient = () => {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, contact, privacyAgreed, clickSource } = body
+    const { event, source, timestamp, metadata } = body
 
-    // 필수 필드 검증
-    if (!name || !contact) {
+    if (!event || !source) {
       return NextResponse.json(
-        { error: '이름과 연락처를 입력해주세요.' },
+        { error: '이벤트와 출처는 필수입니다.' },
         { status: 400 }
       )
     }
 
-    if (!privacyAgreed) {
-      return NextResponse.json(
-        { error: '개인정보 처리방침에 동의해주세요.' },
-        { status: 400 }
-      )
-    }
-
-    // Supabase 클라이언트 가져오기
     const supabase = getSupabaseClient()
     
     if (!supabase) {
@@ -47,23 +37,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Supabase에 데이터 저장
+    // 추적 데이터 저장
     const { data, error } = await supabase
-      .from('consultations')
+      .from('tracking_logs')
       .insert([
         {
-          name,
-          contact,
-          is_completed: false, // 신청 시에는 미완료 상태
-          click_source: clickSource || 'unknown', // 클릭 출처 추적
+          event,
+          source,
+          timestamp: timestamp || new Date().toISOString(),
+          metadata: metadata || {},
         },
       ])
       .select()
 
     if (error) {
-      console.error('Supabase error:', error)
+      console.error('Tracking error:', error)
       return NextResponse.json(
-        { error: '데이터 저장 중 오류가 발생했습니다.' },
+        { error: '추적 데이터 저장 중 오류가 발생했습니다.' },
         { status: 500 }
       )
     }

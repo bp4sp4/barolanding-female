@@ -18,7 +18,38 @@ export default function Home() {
     contact: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clickSource, setClickSource] = useState<string>("");
   const footerRef = useRef<HTMLElement>(null);
+
+  // 연락처 포맷팅 함수 (010-XXXX-XXXX)
+  const formatPhoneNumber = (value: string) => {
+    // 숫자만 추출
+    const numbers = value.replace(/[^\d]/g, "");
+
+    // 길이에 따라 포맷팅
+    if (numbers.length <= 3) {
+      return numbers;
+    } else if (numbers.length <= 7) {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    } else {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(
+        7,
+        11
+      )}`;
+    }
+  };
+
+  // 연락처 입력 핸들러
+  const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setFormData({ ...formData, contact: formatted });
+  };
+
+  // 폼 유효성 검사
+  const isFormValid =
+    formData.name.trim() !== "" &&
+    formData.contact.replace(/[^\d]/g, "").length >= 10 &&
+    privacyAgreed;
 
   const handleCloseModal = () => {
     // 배경 클릭 시 그냥 닫기만
@@ -44,6 +75,13 @@ export default function Home() {
       return;
     }
 
+    // 연락처 유효성 검사 (최소 10자리 숫자)
+    const phoneNumbers = formData.contact.replace(/[^\d]/g, "");
+    if (phoneNumbers.length < 10) {
+      alert("올바른 연락처를 입력해주세요. (010-XXXX-XXXX)");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -56,6 +94,7 @@ export default function Home() {
           name: formData.name,
           contact: formData.contact,
           privacyAgreed: privacyAgreed,
+          clickSource: clickSource || "unknown",
         }),
       });
 
@@ -72,6 +111,7 @@ export default function Home() {
       // 폼 초기화
       setFormData({ name: "", contact: "" });
       setPrivacyAgreed(false);
+      setClickSource(""); // 추적 정보 초기화
     } catch (error) {
       console.error("Submit error:", error);
       alert(
@@ -105,6 +145,33 @@ export default function Home() {
 
       requestAnimationFrame(step);
     }
+  };
+
+  // URL 파라미터에서 utm_source 읽어서 clickSource 설정
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const utmSource = params.get("utm_source");
+      if (utmSource) {
+        setClickSource(utmSource);
+      }
+    }
+  }, []);
+
+  // 모달 열기 핸들러 (URL 파라미터가 있으면 우선시)
+  const handleOpenModal = (defaultSource: string) => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const utmSource = params.get("utm_source");
+      if (utmSource) {
+        setClickSource(utmSource);
+      } else {
+        setClickSource(defaultSource);
+      }
+    } else {
+      setClickSource(defaultSource);
+    }
+    setShowModal(true);
   };
 
   useEffect(() => {
@@ -182,18 +249,20 @@ export default function Home() {
         {showMenu && (
           <div className={styles.menu}>
             <a
-              href="https://xn--ok0bx6qu3cv5m.com/"
+              href="https://xn--ok0bx6qu3cv5m.com/?utm_source=landing&utm_medium=menu&utm_campaign=barolanding"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.menu_item}
+              onClick={() => {}}
             >
-              한평생바로가업
+              한평생바로기업
             </a>
             <a
-              href="https://xn--ok0bx6qu3cv5m.com/policyfunds"
+              href="https://xn--ok0bx6qu3cv5m.com/policyfunds?utm_source=landing&utm_medium=menu&utm_campaign=barolanding"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.menu_item}
+              onClick={() => {}}
             >
               정책자금
             </a>
@@ -289,7 +358,7 @@ export default function Home() {
         </h2>
         <button
           className={styles.footer_button}
-          onClick={() => setShowModal(true)}
+          onClick={() => handleOpenModal("footer")}
         >
           무료상담 신청하기
         </button>
@@ -297,13 +366,13 @@ export default function Home() {
       {showFloatingBanner && (
         <div className={styles.floating_banner}>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={scrollToFooter}
             className={`${styles.floating_button} ${styles.floating_button_blue}`}
           >
             무료상담 신청하기
           </button>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={scrollToFooter}
             className={`${styles.floating_button} ${styles.floating_button_dark}`}
           >
             무료상담 신청하기
@@ -354,13 +423,12 @@ export default function Home() {
                 required
               />
               <input
-                type="text"
+                type="tel"
                 placeholder="개인 연락처 혹은 회사 연락처"
                 className={styles.modal_input}
                 value={formData.contact}
-                onChange={(e) =>
-                  setFormData({ ...formData, contact: e.target.value })
-                }
+                onChange={handleContactChange}
+                maxLength={13}
                 required
               />
             </form>
@@ -428,7 +496,7 @@ export default function Home() {
               type="submit"
               className={styles.modal_submit_button}
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isFormValid}
             >
               {isSubmitting ? "제출 중..." : "무료상담 신청하기"}
             </button>
