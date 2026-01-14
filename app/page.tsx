@@ -10,13 +10,76 @@ export default function Home() {
   const [showFloatingBanner, setShowFloatingBanner] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    contact: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const footerRef = useRef<HTMLElement>(null);
 
   const handleCloseModal = () => {
+    // 배경 클릭 시 그냥 닫기만
+    setShowModal(false);
+  };
+
+  const handleCloseButtonClick = () => {
+    // X 버튼 클릭 시 "다시 신청" 팝업 표시
     setShowModal(false);
     setShowSuccessModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!privacyAgreed) {
+      alert("개인정보 처리방침에 동의해주세요.");
+      return;
+    }
+
+    if (!formData.name || !formData.contact) {
+      alert("이름과 연락처를 입력해주세요.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          contact: formData.contact,
+          privacyAgreed: privacyAgreed,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "제출에 실패했습니다.");
+      }
+
+      // 성공 시 모달 닫고 신청 완료 팝업 표시
+      setShowModal(false);
+      setShowCompletedModal(true);
+
+      // 폼 초기화
+      setFormData({ name: "", contact: "" });
+      setPrivacyAgreed(false);
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert(
+        error instanceof Error ? error.message : "제출 중 오류가 발생했습니다."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const scrollToFooter = () => {
@@ -124,7 +187,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className={styles.menu_item}
             >
-              한평생바로가기
+              한평생바로가업
             </a>
             <a
               href="https://xn--ok0bx6qu3cv5m.com/policyfunds"
@@ -248,14 +311,11 @@ export default function Home() {
         </div>
       )}
       {showModal && (
-        <div
-          className={styles.modal_overlay}
-          onClick={handleCloseModal}
-        >
+        <div className={styles.modal_overlay} onClick={handleCloseModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <button
               className={styles.modal_close}
-              onClick={handleCloseModal}
+              onClick={handleCloseButtonClick}
               aria-label="닫기"
             >
               <svg
@@ -282,18 +342,28 @@ export default function Home() {
               <p className={styles.modal_top_text}>지금 바로 시작하세요</p>
             </div>
             <h2 className={styles.modal_title}>정책자금 무료상담 신청</h2>
-            <div className={styles.modal_form}>
+            <form className={styles.modal_form} onSubmit={handleSubmit}>
               <input
                 type="text"
                 placeholder="이름 혹은 회사명"
                 className={styles.modal_input}
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
               />
               <input
                 type="text"
                 placeholder="개인 연락처 혹은 회사 연락처"
                 className={styles.modal_input}
+                value={formData.contact}
+                onChange={(e) =>
+                  setFormData({ ...formData, contact: e.target.value })
+                }
+                required
               />
-            </div>
+            </form>
             <div className={styles.modal_privacy}>
               <span className={styles.modal_privacy_text}>
                 개인정보 처리방침 동의
@@ -354,9 +424,42 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <button className={styles.modal_submit_button}>
-              무료상담 신청하기
+            <button
+              type="submit"
+              className={styles.modal_submit_button}
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "제출 중..." : "무료상담 신청하기"}
             </button>
+          </div>
+        </div>
+      )}
+      {showCompletedModal && (
+        <div
+          className={styles.modal_overlay}
+          onClick={() => setShowCompletedModal(false)}
+        >
+          <div
+            className={styles.completed_modal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.completed_modal_content}>
+              <img
+                src="/check.gif"
+                alt="신청 완료"
+                className={styles.completed_modal_image}
+              />
+              <h2 className={styles.completed_modal_title}>
+                신청이 완료되었습니다
+              </h2>
+              <button
+                className={styles.completed_modal_button}
+                onClick={() => setShowCompletedModal(false)}
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
       )}

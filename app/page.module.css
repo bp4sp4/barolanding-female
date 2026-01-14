@@ -23,6 +23,13 @@
   align-self: stretch;
   position: relative;
   z-index: 2004;
+  transition: opacity 0.3s ease;
+}
+
+.header_hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .header_wrapper {
@@ -71,10 +78,11 @@
   line-height: 100%;
   text-decoration: none;
   transition: background-color 0.2s;
+  background-color: transparent;
 }
 
 .menu_item:hover {
-  background-color: var(--Grayscale-50, #fafafa);
+  background-color: transparent;
 }
 
 .menu_item:not(:last-child) {
@@ -400,12 +408,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 3000;
   padding: 16px;
+  backdrop-filter: blur(2px);
 }
 
 .modal {
@@ -612,6 +621,67 @@
 }
 
 .modal_submit_button:hover {
+  background: var(--Blue-600, #0040cc);
+}
+
+.completed_modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 343px;
+  padding: var(--unit-7, 24px) var(--unit-5, 16px);
+  background: var(--white, #fff);
+  border-radius: 8px;
+  box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.15);
+}
+
+.completed_modal_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.completed_modal_image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.completed_modal_title {
+  color: var(--Grayscale-700, #3d3d3d);
+  font-family: Pretendard;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+.completed_modal_button {
+  display: flex;
+  padding: var(--unit-6, 20px) var(--unit-7, 24px);
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 8px;
+  background: var(--Blue-500, #0051ff);
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.completed_modal_button:hover {
   background: var(--Blue-600, #0040cc);
 }
 
