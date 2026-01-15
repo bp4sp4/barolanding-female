@@ -294,7 +294,7 @@ export default function Home() {
         {showMenu && (
           <div className={styles.menu}>
             <a
-              href="https://xn--ok0bx6qu3cv5m.com/?utm_source=landing&utm_medium=menu&utm_campaign=barolanding"
+              href="https://xn--ok0bx6qu3cv5m.com/"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.menu_item}
@@ -303,7 +303,7 @@ export default function Home() {
               한평생바로기업
             </a>
             <a
-              href="https://xn--ok0bx6qu3cv5m.com/policyfunds?utm_source=landing&utm_medium=menu&utm_campaign=barolanding"
+              href="https://xn--ok0bx6qu3cv5m.com/policyfunds"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.menu_item}
