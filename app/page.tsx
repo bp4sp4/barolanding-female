@@ -20,10 +20,13 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clickSource, setClickSource] = useState<string>("");
   const footerRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const contentsSectionRef = useRef<HTMLDivElement>(null);
   const contentsSectionBlueRef = useRef<HTMLDivElement>(null);
   const contentsIconsWrapperRef = useRef<HTMLDivElement>(null);
   const newSectionRef = useRef<HTMLDivElement>(null);
+  const contentsTextRef = useRef<HTMLParagraphElement>(null);
+  const contentsButtonRef = useRef<HTMLParagraphElement>(null);
   const contentsImage1Ref = useRef<HTMLImageElement>(null);
   const contentsImage2Ref = useRef<HTMLImageElement>(null);
   const contentsImage3Ref = useRef<HTMLImageElement>(null);
@@ -268,8 +271,8 @@ export default function Home() {
   // 섹션 애니메이션을 위한 Intersection Observer
   useEffect(() => {
     const observerOptions = {
-      threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px",
+      threshold: 0.05,
+      rootMargin: "0px 0px -150px 0px",
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -283,9 +286,10 @@ export default function Home() {
 
     const sections = [
       contentsSectionRef.current,
-      contentsSectionBlueRef.current,
       contentsIconsWrapperRef.current,
       newSectionRef.current,
+      contentsTextRef.current,
+      contentsButtonRef.current,
     ].filter(Boolean);
 
     sections.forEach((section) => {
@@ -306,16 +310,14 @@ export default function Home() {
   // 이미지 개별 애니메이션을 위한 Intersection Observer
   useEffect(() => {
     const imageObserverOptions = {
-      threshold: 0.01,
-      rootMargin: "0px 0px 0px 0px",
+      threshold: 0.05,
+      rootMargin: "0px 0px -150px 0px",
     };
 
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add("fadeInUp");
-          }, 100);
+          entry.target.classList.add("fadeInUp");
           imageObserver.unobserve(entry.target);
         }
       });
@@ -327,11 +329,6 @@ export default function Home() {
         contentsImage1Ref.current,
         contentsImage2Ref.current,
         contentsImage3Ref.current,
-        reviewImage1Ref.current,
-        reviewImage2Ref.current,
-        reviewImage3Ref.current,
-        reviewImage4Ref.current,
-        reviewImage5Ref.current,
       ].filter(Boolean);
 
       images.forEach((image) => {
@@ -347,11 +344,6 @@ export default function Home() {
         contentsImage1Ref.current,
         contentsImage2Ref.current,
         contentsImage3Ref.current,
-        reviewImage1Ref.current,
-        reviewImage2Ref.current,
-        reviewImage3Ref.current,
-        reviewImage4Ref.current,
-        reviewImage5Ref.current,
       ].filter(Boolean);
       images.forEach((image) => {
         if (image) {
@@ -435,7 +427,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      <div className={styles.content}>
+      <div ref={contentRef} className={styles.content}>
         <Image
           src="/main.gif"
           alt="main animation"
@@ -467,8 +459,8 @@ export default function Home() {
         ref={contentsSectionBlueRef}
         className={styles.contents_section_blue}
       >
-        <p className={styles.contents_text}>이런 대표님들 모두</p>
-        <p className={styles.contents_button}>정책자금 확보 가능합니다</p>
+        <p ref={contentsTextRef} className={styles.contents_text}>이런 대표님들 모두</p>
+        <p ref={contentsButtonRef} className={styles.contents_button}>정책자금 확보 가능합니다</p>
         <div className={styles.contents_images}>
           <img
             ref={contentsImage1Ref}
