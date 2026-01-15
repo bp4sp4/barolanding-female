@@ -30,6 +30,8 @@ export default function Home() {
   const reviewImage1Ref = useRef<HTMLDivElement>(null);
   const reviewImage2Ref = useRef<HTMLDivElement>(null);
   const reviewImage3Ref = useRef<HTMLDivElement>(null);
+  const reviewImage4Ref = useRef<HTMLDivElement>(null);
+  const reviewImage5Ref = useRef<HTMLDivElement>(null);
 
   // 연락처 포맷팅 함수 (010-XXXX-XXXX)
   const formatPhoneNumber = (value: string) => {
@@ -328,6 +330,8 @@ export default function Home() {
         reviewImage1Ref.current,
         reviewImage2Ref.current,
         reviewImage3Ref.current,
+        reviewImage4Ref.current,
+        reviewImage5Ref.current,
       ].filter(Boolean);
 
       images.forEach((image) => {
@@ -346,6 +350,8 @@ export default function Home() {
         reviewImage1Ref.current,
         reviewImage2Ref.current,
         reviewImage3Ref.current,
+        reviewImage4Ref.current,
+        reviewImage5Ref.current,
       ].filter(Boolean);
       images.forEach((image) => {
         if (image) {
@@ -359,14 +365,19 @@ export default function Home() {
     <div className={styles.layout_wrapper}>
       <div className={styles.header_gnb}>
         <div className={styles.header_wrapper}>
-          <img
-            src="/baro_logo.png"
-            alt="logo"
-            className={styles.baro_logo}
-            onClick={() => handleOpenModal("", false)}
-            style={{ cursor: "pointer" }}
-            draggable="false"
-          />
+          <a
+            href="https://xn--ok0bx6qu3cv5m.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "inline-block" }}
+          >
+            <img
+              src="/baro_logo.png"
+              alt="logo"
+              className={styles.baro_logo}
+              draggable="false"
+            />
+          </a>
           <button
             className={styles.hamburger_button}
             aria-label={showMenu ? "닫기" : "메뉴"}
@@ -530,32 +541,32 @@ export default function Home() {
           className={styles.reviews_scroll}
           breakpoints={{
             375: {
-              slidesPerView: 1.2,
-              spaceBetween: 70,
+              slidesPerView: "auto",
+              spaceBetween: 0,
               centeredSlides: true,
             },
             480: {
-              slidesPerView: 1.2,
+              slidesPerView: "auto",
               spaceBetween: 10,
               centeredSlides: true,
             },
             768: {
-              slidesPerView: 2,
+              slidesPerView: "auto",
               spaceBetween: 16,
               centeredSlides: false,
             },
             1024: {
-              slidesPerView: 2,
+              slidesPerView: "auto",
               spaceBetween: 20,
               centeredSlides: false,
             },
             1280: {
-              slidesPerView: 2.3,
+              slidesPerView: "auto",
               spaceBetween: 24,
               centeredSlides: false,
             },
             1920: {
-              slidesPerView: 2.3,
+              slidesPerView: "auto",
               spaceBetween: 70,
               centeredSlides: false,
             },
@@ -589,7 +600,7 @@ export default function Home() {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className={styles.review_container}>
+            <div ref={reviewImage4Ref} className={styles.review_container}>
               <img
                 src="/review_04.png"
                 alt="review 04"
@@ -598,7 +609,7 @@ export default function Home() {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className={styles.review_container}>
+            <div ref={reviewImage5Ref} className={styles.review_container}>
               <img
                 src="/review_05.png"
                 alt="review 05"
