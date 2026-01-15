@@ -163,6 +163,21 @@ export default function Home() {
     }
   }, []);
 
+  // utm_source를 한글 형식으로 변환
+  const formatClickSource = (utmSource: string, materialId: string | null): string => {
+    const sourceMap: { [key: string]: string } = {
+      daangn: "당근마켓",
+      insta: "인스타그램",
+    };
+
+    const koreanSource = sourceMap[utmSource] || utmSource;
+
+    if (materialId) {
+      return `${koreanSource}_소재_${materialId}`;
+    }
+    return koreanSource;
+  };
+
   // URL 파라미터에서 utm_source 읽어서 clickSource 설정
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -171,12 +186,7 @@ export default function Home() {
       const materialId = params.get("material_id");
 
       if (utmSource) {
-        // 소재 번호가 있으면 함께 포함하여 추적
-        if (materialId) {
-          setClickSource(`${utmSource}_material_${materialId}`);
-        } else {
-          setClickSource(utmSource);
-        }
+        setClickSource(formatClickSource(utmSource, materialId));
       }
     }
   }, []);
@@ -193,12 +203,7 @@ export default function Home() {
         const materialId = params.get("material_id");
 
         if (utmSource) {
-          // 소재 번호가 있으면 함께 포함하여 추적
-          if (materialId) {
-            setClickSource(`${utmSource}_material_${materialId}`);
-          } else {
-            setClickSource(utmSource);
-          }
+          setClickSource(formatClickSource(utmSource, materialId));
         } else {
           setClickSource(defaultSource);
         }
