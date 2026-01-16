@@ -72,40 +72,46 @@ export async function sendConsultationEmail(data: ConsultationEmailData) {
 
     // 로고 이미지를 attachments로 첨부하고 cid로 인라인 표시
     // 배포 환경에서 파일 경로가 다를 수 있으므로 여러 경로 시도
+    // 로고 파일이 없어도 이메일은 정상 전송되도록 에러를 잡아서 처리
     let attachments: any[] = [];
     let logoCid = "";
     
-    const possibleLogoPaths = [
-      path.join(process.cwd(), "public", "logo_black.png"),
-      path.join(process.cwd(), ".next", "static", "logo_black.png"),
-      path.join(process.cwd(), "logo_black.png"),
-      path.join(__dirname, "..", "..", "public", "logo_black.png"),
-    ];
+    try {
+      const possibleLogoPaths = [
+        path.join(process.cwd(), "public", "logo_black.png"),
+        path.join(process.cwd(), ".next", "static", "logo_black.png"),
+        path.join(process.cwd(), "logo_black.png"),
+        path.join(__dirname, "..", "..", "public", "logo_black.png"),
+      ];
 
-    console.log("Current working directory:", process.cwd());
-    console.log("Trying logo paths:", possibleLogoPaths);
+      console.log("Current working directory:", process.cwd());
+      console.log("Trying logo paths:", possibleLogoPaths);
 
-    let logoFound = false;
-    for (const logoPath of possibleLogoPaths) {
-      try {
-        if (fs.existsSync(logoPath)) {
-          console.log("Logo file found at:", logoPath);
-          logoCid = "logo_black";
-          attachments.push({
-            filename: "logo_black.png",
-            path: logoPath,
-            cid: logoCid, // Content-ID로 참조
-          });
-          logoFound = true;
-          break;
+      let logoFound = false;
+      for (const logoPath of possibleLogoPaths) {
+        try {
+          if (fs.existsSync(logoPath)) {
+            console.log("Logo file found at:", logoPath);
+            logoCid = "logo_black";
+            attachments.push({
+              filename: "logo_black.png",
+              path: logoPath,
+              cid: logoCid, // Content-ID로 참조
+            });
+            logoFound = true;
+            break;
+          }
+        } catch (pathError) {
+          console.warn(`Failed to check logo path ${logoPath}:`, pathError);
         }
-      } catch (error) {
-        console.warn(`Failed to check logo path ${logoPath}:`, error);
       }
-    }
 
-    if (!logoFound) {
-      console.warn("Logo file not found in any of the attempted paths, continuing without logo");
+      if (!logoFound) {
+        console.warn("Logo file not found in any of the attempted paths, continuing without logo");
+      }
+    } catch (logoError) {
+      // 로고 파일 처리 중 에러가 발생해도 이메일 전송은 계속
+      console.warn("Error processing logo file, continuing without logo:", logoError);
     }
 
     const mailOptions = {
