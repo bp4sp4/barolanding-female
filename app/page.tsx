@@ -493,72 +493,7 @@ export default function Home() {
           className={styles.contents_image}
         />
       </div>
-      <div
-        ref={contentsSectionBlueRef}
-        className={styles.contents_section_blue}
-      >
-        <p ref={contentsTextRef} className={styles.contents_text}>
-          이런 대표님들 모두
-        </p>
-        <p ref={contentsButtonRef} className={styles.contents_button}>
-          정책자금 확보 가능합니다
-        </p>
-        <div className={styles.contents_images}>
-          <img
-            ref={contentsImage1Ref}
-            src="/contents_01_001.png"
-            alt="contents 01"
-            className={styles.contents_image_slot}
-          />
-          <img
-            ref={contentsImage2Ref}
-            src="/contents_01_002.png"
-            alt="contents 02"
-            className={styles.contents_image_slot}
-          />
-          <img
-            ref={contentsImage3Ref}
-            src="/contents_01_003.png"
-            alt="contents 03"
-            className={styles.contents_image_slot}
-          />
-        </div>
-      </div>
-      <div
-        ref={contentsIconsWrapperRef}
-        className={styles.contents_icons_wrapper}
-      >
-        <p className={styles.contents_subtitle}>
-          한평생 바로기업에서 모두 찾아드립니다.
-        </p>
-        <h2 className={styles.contents_main_title}>
-          대표님들이 바로기업을 찾는 이유
-        </h2>
-        <div className={styles.contents_content_wrapper}>
-          <div className={styles.contents_images_wrapper}>
-            <img
-              src="/contents_02_001.png"
-              alt="높은 승인률"
-              className={styles.contents_icon}
-            />
-            <img
-              src="/contents_02_002.png"
-              alt="빠른 처리"
-              className={styles.contents_icon}
-            />
-            <img
-              src="/contents_02_003.png"
-              alt="정확한 컨설팅"
-              className={styles.contents_icon}
-            />
-            <img
-              src="/contents_02_004.png"
-              alt="최대 혜택"
-              className={styles.contents_icon}
-            />
-          </div>
-        </div>
-      </div>
+
       <div ref={newSectionRef} className={styles.new_section}>
         <div className={styles.star_image}></div>
         <p className={styles.review_text}>
@@ -642,34 +577,33 @@ export default function Home() {
               />
             </div>
           </SwiperSlide>
-          <SwiperSlide>
-            <div ref={reviewImage5Ref} className={styles.review_container}>
-              <img
-                src="/review_05.png"
-                alt="review 05"
-                className={styles.review_item}
-              />
-            </div>
-          </SwiperSlide>
         </Swiper>
       </div>
       <footer ref={footerRef} className={styles.footer}>
-        <h2 className={styles.footer_title}>
-          START UP,
-          <br />
-          시작부터 성장까지
-        </h2>
+        <div className={styles.summary_wrapper}>
+          <h2 className={styles.summary_text}>
+            지금 당장 바꾸실 필요는 없습니다.
+          </h2>
+          <h2 className={styles.summary_title}>
+            지금 쓰는 대출을
+            <br />{" "}
+            <span className={styles.summary_title_bold}>
+              그대로 두셔도 되는지만 한 번
+            </span>
+            <br /> 확인해 보세요.
+          </h2>
+        </div>
         <button
           className={styles.footer_button}
-          onClick={() => handleOpenModal("랜딩페이지")}
+          onClick={() => handleOpenModal("사장님-랜딩페이지")}
         >
-          무료상담 신청하기
+          지금 대출, 괜찮은지 확인하기
         </button>
       </footer>
       {showFloatingBanner && (
         <div className={styles.floating_banner}>
           <button onClick={scrollToFooter} className={styles.floating_button}>
-            무료상담 신청하기
+            지금 대출, 괜찮은지 확인하기
           </button>
         </div>
       )}
