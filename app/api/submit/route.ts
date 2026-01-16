@@ -71,14 +71,34 @@ export async function POST(request: NextRequest) {
 
     // 이메일 알림 전송 (비동기, 실패해도 상담 신청은 성공 처리)
     if (process.env.NAVER_EMAIL && process.env.NAVER_APP_PASSWORD) {
+      console.log("Attempting to send email notification...");
+      console.log("NAVER_EMAIL configured:", !!process.env.NAVER_EMAIL);
+      console.log("NAVER_APP_PASSWORD configured:", !!process.env.NAVER_APP_PASSWORD);
+      
       sendConsultationEmail({
         name,
         contact,
         click_source: clickSource || null,
-      }).catch((emailError) => {
-        console.error("Failed to send email notification:", emailError);
-        // 이메일 실패는 로그만 남기고 사용자에게는 에러를 반환하지 않음
-      });
+      })
+        .then((result) => {
+          if (result.success) {
+            console.log("Email sent successfully:", result.messageId);
+          } else {
+            console.error("Email sending failed:", result.error);
+          }
+        })
+        .catch((emailError) => {
+          console.error("Failed to send email notification:", emailError);
+          console.error("Email error details:", {
+            message: emailError instanceof Error ? emailError.message : String(emailError),
+            stack: emailError instanceof Error ? emailError.stack : undefined,
+          });
+          // 이메일 실패는 로그만 남기고 사용자에게는 에러를 반환하지 않음
+        });
+    } else {
+      console.warn("Email configuration missing. NAVER_EMAIL or NAVER_APP_PASSWORD not set.");
+      console.warn("NAVER_EMAIL:", !!process.env.NAVER_EMAIL);
+      console.warn("NAVER_APP_PASSWORD:", !!process.env.NAVER_APP_PASSWORD);
     }
 
     return NextResponse.json(

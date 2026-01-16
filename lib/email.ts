@@ -2,16 +2,22 @@ import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
 
-// 네이버 메일 SMTP 설정
-const transporter = nodemailer.createTransport({
-  host: "smtp.naver.com",
-  port: 465,
-  secure: true, // SSL 사용
-  auth: {
-    user: process.env.NAVER_EMAIL, // 네이버 이메일 주소
-    pass: process.env.NAVER_APP_PASSWORD, // 네이버 앱 비밀번호
-  },
-});
+// 네이버 메일 SMTP transporter 생성 함수
+function createTransporter() {
+  if (!process.env.NAVER_EMAIL || !process.env.NAVER_APP_PASSWORD) {
+    throw new Error("NAVER_EMAIL or NAVER_APP_PASSWORD not configured");
+  }
+
+  return nodemailer.createTransport({
+    host: "smtp.naver.com",
+    port: 465,
+    secure: true, // SSL 사용
+    auth: {
+      user: process.env.NAVER_EMAIL, // 네이버 이메일 주소
+      pass: process.env.NAVER_APP_PASSWORD, // 네이버 앱 비밀번호
+    },
+  });
+}
 
 interface ConsultationEmailData {
   name: string;
@@ -21,17 +27,47 @@ interface ConsultationEmailData {
 
 export async function sendConsultationEmail(data: ConsultationEmailData) {
   try {
+    // 환경 변수 확인 및 로깅
+    console.log("sendConsultationEmail called with data:", {
+      name: data.name,
+      contact: data.contact,
+      click_source: data.click_source,
+    });
+
+    if (!process.env.NAVER_EMAIL) {
+      console.error("NAVER_EMAIL not configured");
+      return { success: false, error: "NAVER_EMAIL not configured" };
+    }
+
+    if (!process.env.NAVER_APP_PASSWORD) {
+      console.error("NAVER_APP_PASSWORD not configured");
+      return { success: false, error: "NAVER_APP_PASSWORD not configured" };
+    }
+
     const recipientEmail =
       process.env.CONSULTATION_EMAIL || process.env.NAVER_EMAIL;
 
     if (!recipientEmail) {
       console.error("Recipient email not configured");
-      return { success: false, error: "Email not configured" };
+      return { success: false, error: "Recipient email not configured" };
     }
 
-    if (!process.env.NAVER_EMAIL) {
-      console.error("NAVER_EMAIL not configured");
-      return { success: false, error: "NAVER_EMAIL not configured" };
+    console.log("Email configuration:", {
+      from: process.env.NAVER_EMAIL,
+      to: recipientEmail,
+      hasPassword: !!process.env.NAVER_APP_PASSWORD,
+    });
+
+    // Transporter 생성 및 연결 검증
+    const transporter = createTransporter();
+    console.log("Transporter created, verifying connection...");
+    
+    try {
+      await transporter.verify();
+      console.log("SMTP connection verified successfully");
+    } catch (verifyError) {
+      console.error("SMTP connection verification failed:", verifyError);
+      throw new Error(`SMTP verification failed: ${verifyError instanceof Error ? verifyError.message : String(verifyError)}`);
     }
 
     // 로고 이미지를 attachments로 첨부하고 cid로 인라인 표시
@@ -149,11 +185,25 @@ ${data.click_source ? `유입 경로: ${data.click_source}\n` : ""}
       `,
     };
 
+    console.log("Sending email with nodemailer...");
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.messageId);
+    console.log("Email sent successfully:", {
+      messageId: info.messageId,
+      response: info.response,
+      accepted: info.accepted,
+      rejected: info.rejected,
+    });
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error("Error sending email:", error);
+    console.error("Error details:", {
+      name: error instanceof Error ? error.name : undefined,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      code: (error as any)?.code,
+      command: (error as any)?.command,
+      response: (error as any)?.response,
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
