@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
 
 interface ConsultationEmailData {
   name: string;
@@ -45,8 +47,21 @@ export async function sendConsultationEmail(data: ConsultationEmailData) {
 
     // 수신자 이메일: CONSULTATION_EMAIL이 있으면 사용, 없으면 기본값
     const recipientEmail = process.env.CONSULTATION_EMAIL || "bp4sp4@naver.com";
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://xn--ok0bx6qu3cv5m.com";
-    const logoUrl = `${baseUrl}/logo_black.png`;
+    
+    // 로고 이미지를 base64로 인코딩하여 이메일에 직접 포함
+    let logoBase64 = "";
+    try {
+      const logoPath = path.join(process.cwd(), "public", "logo_black.png");
+      if (fs.existsSync(logoPath)) {
+        const logoBuffer = fs.readFileSync(logoPath);
+        logoBase64 = logoBuffer.toString("base64");
+        console.log("[EMAIL] 로고 이미지를 base64로 인코딩 완료");
+      } else {
+        console.warn("[EMAIL] 로고 파일을 찾을 수 없습니다:", logoPath);
+      }
+    } catch (error) {
+      console.error("[EMAIL] 로고 이미지 인코딩 실패:", error);
+    }
 
     console.log("[EMAIL] 설정 확인:");
     console.log("[EMAIL] - BREVO_SMTP_LOGIN 존재:", !!smtpLogin);
@@ -64,8 +79,7 @@ export async function sendConsultationEmail(data: ConsultationEmailData) {
       "[EMAIL] - recipientEmail:",
       recipientEmail ? `${recipientEmail.substring(0, 3)}***` : "없음"
     );
-    console.log("[EMAIL] - baseUrl:", baseUrl);
-    console.log("[EMAIL] - logoUrl:", logoUrl);
+    console.log("[EMAIL] - logoBase64 존재:", !!logoBase64);
 
     if (!smtpLogin || !smtpKey) {
       console.error("[EMAIL] Brevo 환경 변수가 설정되지 않음");
@@ -111,7 +125,7 @@ export async function sendConsultationEmail(data: ConsultationEmailData) {
     <body style="margin: 0; padding: 0; background-color: #ffffff; color: #191f28;">
       <div style="max-width: 600px; margin: 0 auto; padding: 60px 24px;">
         <div style="margin-bottom: 48px;">
-          <img src="${logoUrl}" alt="한평생 바로기업" style="height: 32px; width: auto;" />
+          ${logoBase64 ? `<img src="data:image/png;base64,${logoBase64}" alt="한평생 바로기업" style="height: 32px; width: auto;" />` : '<span style="font-size: 20px; font-weight: 700; color: #191f28;">한평생 바로기업</span>'}
         </div>
 
         <div style="margin-bottom: 40px;">
