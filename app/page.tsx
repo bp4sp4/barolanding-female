@@ -26,11 +26,20 @@ export default function Home() {
   const contentsSectionBlueRef = useRef<HTMLDivElement>(null);
   const contentsIconsWrapperRef = useRef<HTMLDivElement>(null);
   const newSectionRef = useRef<HTMLDivElement>(null);
+  const content005SectionRef = useRef<HTMLDivElement>(null);
+  const consultSectionRef = useRef<HTMLDivElement>(null);
   const contentsTextRef = useRef<HTMLParagraphElement>(null);
   const contentsButtonRef = useRef<HTMLParagraphElement>(null);
   const contentsImage1Ref = useRef<HTMLImageElement>(null);
   const contentsImage2Ref = useRef<HTMLImageElement>(null);
   const contentsImage3Ref = useRef<HTMLImageElement>(null);
+  const contentsCard1Ref = useRef<HTMLImageElement>(null);
+  const contentsCard2Ref = useRef<HTMLImageElement>(null);
+  const contentsCard3Ref = useRef<HTMLImageElement>(null);
+  const checkImage1Ref = useRef<HTMLImageElement>(null);
+  const checkImage2Ref = useRef<HTMLImageElement>(null);
+  const checkImage3Ref = useRef<HTMLImageElement>(null);
+  const checkImage4Ref = useRef<HTMLImageElement>(null);
   const reviewImage1Ref = useRef<HTMLDivElement>(null);
   const reviewImage2Ref = useRef<HTMLDivElement>(null);
   const reviewImage3Ref = useRef<HTMLDivElement>(null);
@@ -301,11 +310,11 @@ export default function Home() {
     };
   }, []);
 
-  // 섹션 애니메이션을 위한 Intersection Observer
+  // Intersection Observer 설정
   useEffect(() => {
     const observerOptions = {
-      threshold: 0.05,
-      rootMargin: "0px 0px -150px 0px",
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -317,12 +326,19 @@ export default function Home() {
       });
     }, observerOptions);
 
+    // 각 섹션 관찰
     const sections = [
       contentsSectionRef.current,
-      contentsIconsWrapperRef.current,
+      content005SectionRef.current,
+      consultSectionRef.current,
       newSectionRef.current,
-      contentsTextRef.current,
-      contentsButtonRef.current,
+      contentsCard1Ref.current,
+      contentsCard2Ref.current,
+      contentsCard3Ref.current,
+      checkImage1Ref.current,
+      checkImage2Ref.current,
+      checkImage3Ref.current,
+      checkImage4Ref.current,
     ].filter(Boolean);
 
     sections.forEach((section) => {
@@ -335,52 +351,6 @@ export default function Home() {
       sections.forEach((section) => {
         if (section) {
           observer.unobserve(section);
-        }
-      });
-    };
-  }, []);
-
-  // 이미지 개별 애니메이션을 위한 Intersection Observer
-  useEffect(() => {
-    const imageObserverOptions = {
-      threshold: 0.05,
-      rootMargin: "0px 0px -150px 0px",
-    };
-
-    const imageObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("fadeInUp");
-          imageObserver.unobserve(entry.target);
-        }
-      });
-    }, imageObserverOptions);
-
-    // 약간의 지연 후 observer 시작 (컴포넌트가 완전히 렌더링된 후)
-    const timer = setTimeout(() => {
-      const images = [
-        contentsImage1Ref.current,
-        contentsImage2Ref.current,
-        contentsImage3Ref.current,
-      ].filter(Boolean);
-
-      images.forEach((image) => {
-        if (image) {
-          imageObserver.observe(image);
-        }
-      });
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      const images = [
-        contentsImage1Ref.current,
-        contentsImage2Ref.current,
-        contentsImage3Ref.current,
-      ].filter(Boolean);
-      images.forEach((image) => {
-        if (image) {
-          imageObserver.unobserve(image);
         }
       });
     };
@@ -462,10 +432,10 @@ export default function Home() {
       </div>
       <div ref={contentRef} className={styles.content}>
         <Image
-          src="/main.gif"
+          src="/main.png"
           alt="main animation"
-          width={467}
-          height={467}
+          width={521}
+          height={375}
           className={styles.main_gif}
           unoptimized={true}
           priority
@@ -489,6 +459,89 @@ export default function Home() {
       <div ref={contentsSectionRef} className={styles.contents_section}>
         <img
           src="/contents_001.png"
+          alt="contents"
+          className={styles.contents_image}
+        />
+      </div>
+
+      <div className={styles.contents_section_blue}>
+        <div className={styles.contents_header_wrapper}>
+        <p className={styles.contents_header_text}>쌓인 부채보다</p>
+        <p className={styles.contents_header_text}>
+          문제는 <span className={styles.contents_header_highlight}>정리가 안된 상태</span>
+        </p>
+        </div>
+        <div className={styles.contents_cards}>
+          <img 
+            ref={contentsCard1Ref}
+            src="/contents_002.png" 
+            alt="금리가 몇%인지 정확히 모른채 유지" 
+            className={styles.contents_card}
+          />
+          <img 
+            ref={contentsCard2Ref}
+            src="/contents_003.png" 
+            alt="바꿀 수 있는 건지 아닌지조차 애매함" 
+            className={styles.contents_card}
+          />
+          <img 
+            ref={contentsCard3Ref}
+            src="/contents_004.png" 
+            alt="정책자금은 들어봤지만 나랑 상관없는 것 같음" 
+            className={styles.contents_card}
+          />
+        </div>
+        <div className={styles.contents_footer_text}>
+          <p className={styles.contents_footer_line1}>이 상태로 오래 가면,</p>
+          <p className={styles.contents_footer_line2}>
+            <span className={styles.contents_footer_bold}>불필요한 이자 전부</span> 내시게 됩니다.
+          </p>
+        </div>
+      </div>
+      <div className={styles.check_section}>
+        <div className={styles.check_background}></div>
+        <div className={styles.check_content_wrapper}>
+          <p className={styles.check_text}>아래 중 하나라도 해당되신다면,</p>
+          <div className={styles.check_button}>충분히 확인하실만 합니다!</div>
+          <div className={styles.check_images}>
+            <img 
+              ref={checkImage1Ref}
+              src="/check_001.png" 
+              alt="사업자 대출을 이미 보유하고 있다" 
+              className={styles.check_image}
+            />
+            <img 
+              ref={checkImage2Ref}
+              src="/check_002.png" 
+              alt="이자 부담이 계속 신경쓰인다" 
+              className={styles.check_image}
+            />
+            <img 
+              ref={checkImage3Ref}
+              src="/check_003.png" 
+              alt="은행 설명이 어려워 질문을 포기한 적이 있다" 
+              className={styles.check_image}
+            />
+            <img 
+              ref={checkImage4Ref}
+              src="/check_004.png" 
+              alt="누가 옆에서 쉽게 정리해줬으면 좋겠다" 
+              className={styles.check_image}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div ref={content005SectionRef} className={styles.contents_section}>
+        <img
+          src="/content_005.png"
+          alt="contents"
+          className={styles.contents_image}
+        />
+      </div>
+      <div ref={consultSectionRef} className={styles.contents_section}>
+        <img
+          src="/consult.png"
           alt="contents"
           className={styles.contents_image}
         />
@@ -577,6 +630,15 @@ export default function Home() {
               />
             </div>
           </SwiperSlide>
+          <SwiperSlide>
+            <div ref={reviewImage4Ref} className={styles.review_container}>
+              <img
+                src="/review_05.png"
+                alt="review 05"
+                className={styles.review_item}
+              />
+            </div>
+          </SwiperSlide>
         </Swiper>
       </div>
       <footer ref={footerRef} className={styles.footer}>
@@ -585,25 +647,25 @@ export default function Home() {
             지금 당장 바꾸실 필요는 없습니다.
           </h2>
           <h2 className={styles.summary_title}>
-            지금 쓰는 대출을
-            <br />{" "}
+          그대로 가도 되는지만
+            
             <span className={styles.summary_title_bold}>
-              그대로 두셔도 되는지만 한 번
+            &nbsp;한 번쯤<br/>편하게 확인
             </span>
-            <br /> 확인해 보세요.
+            받아보세요
           </h2>
         </div>
         <button
           className={styles.footer_button}
           onClick={() => handleOpenModal("40~50대여성-랜딩페이지")}
         >
-          지금 대출, 괜찮은지 확인하기
+          내 자금상황 괜찮은지 확인하기
         </button>
       </footer>
       {showFloatingBanner && (
         <div className={styles.floating_banner}>
           <button onClick={scrollToFooter} className={styles.floating_button}>
-            지금 대출, 괜찮은지 확인하기
+          내 자금상황 괜찮은지 확인하기
           </button>
         </div>
       )}
