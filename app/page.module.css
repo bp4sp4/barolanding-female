@@ -169,8 +169,15 @@
   left: -10px;
   bottom: 122px;
   z-index: 0;
-  animation: slideUp 0.8s ease-out forwards;
   opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.left_coin.coin_loaded {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .right_coin {
@@ -181,8 +188,15 @@
   right: -10px;
   bottom: 160px;
   z-index: 0;
-  animation: slideUp 0.8s ease-out 0.2s forwards;
   opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s, transform 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+  will-change: opacity, transform;
+}
+
+.right_coin.coin_loaded {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 

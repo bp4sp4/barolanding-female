@@ -13,6 +13,7 @@ export default function Home() {
   const [showCompletedModal, setShowCompletedModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
+  const [coinsLoaded, setCoinsLoaded] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -446,12 +447,30 @@ export default function Home() {
             <img
               src="/left_coin.png"
               alt="left coin"
-              className={styles.left_coin}
+              className={`${styles.left_coin} ${coinsLoaded ? styles.coin_loaded : ''}`}
+              onLoad={() => {
+                const leftImg = document.querySelector(`.${styles.left_coin}`) as HTMLImageElement;
+                const rightImg = document.querySelector(`.${styles.right_coin}`) as HTMLImageElement;
+                if (leftImg?.complete && rightImg?.complete) {
+                  requestAnimationFrame(() => {
+                    setCoinsLoaded(true);
+                  });
+                }
+              }}
             />
             <img
               src="/right_coin.png"
               alt="right coin"
-              className={styles.right_coin}
+              className={`${styles.right_coin} ${coinsLoaded ? styles.coin_loaded : ''}`}
+              onLoad={() => {
+                const leftImg = document.querySelector(`.${styles.left_coin}`) as HTMLImageElement;
+                const rightImg = document.querySelector(`.${styles.right_coin}`) as HTMLImageElement;
+                if (leftImg?.complete && rightImg?.complete) {
+                  requestAnimationFrame(() => {
+                    setCoinsLoaded(true);
+                  });
+                }
+              }}
             />
           </>
         )}
