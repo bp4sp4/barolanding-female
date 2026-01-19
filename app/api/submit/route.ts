@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { sendConsultationEmail } from "@/lib/email";
 
 // Node.js 런타임을 명시적으로 설정
 export const runtime = "nodejs";
@@ -106,6 +107,23 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("Data inserted successfully:", data);
+
+    // 이메일 알림 전송 (비동기, 실패해도 상담 신청은 성공 처리)
+    if (process.env.BREVO_SMTP_LOGIN && process.env.BREVO_SMTP_KEY) {
+      try {
+        const emailResult = await sendConsultationEmail({
+          name,
+          contact,
+          click_source: clickSource || null,
+        });
+        console.log("[EMAIL] 이메일 전송 결과:", JSON.stringify(emailResult, null, 2));
+      } catch (emailError: unknown) {
+        // 이메일 전송 실패해도 상담 신청은 성공 처리
+        console.error("[EMAIL] 이메일 전송 실패:", emailError instanceof Error ? emailError.message : String(emailError));
+      }
+    } else {
+      console.warn("[EMAIL] Brevo 환경 변수가 설정되지 않아 이메일 전송을 건너뜁니다");
+    }
 
     console.log("=== Request processed successfully ===");
     return NextResponse.json({ success: true, data }, { status: 201 });
