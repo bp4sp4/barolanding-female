@@ -595,7 +595,7 @@ export default function Home() {
         </div>
         <button
           className={styles.footer_button}
-          onClick={() => handleOpenModal("4~50대여성-랜딩페이지")}
+          onClick={() => handleOpenModal("40~50대여성-랜딩페이지")}
         >
           지금 대출, 괜찮은지 확인하기
         </button>
