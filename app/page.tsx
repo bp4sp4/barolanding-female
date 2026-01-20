@@ -233,6 +233,7 @@ export default function Home() {
       facebook: "페이스북",
       youtube: "유튜브",
       google: "구글",
+      kakao: "카카오",
     };
 
     const shortSource = sourceMap[utmSource] || utmSource;
