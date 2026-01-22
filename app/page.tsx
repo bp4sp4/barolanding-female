@@ -234,6 +234,7 @@ export default function Home() {
       youtube: "유튜브",
       google: "구글",
       kakao: "카카오",
+      naver: "네이버",
     };
 
     const shortSource = sourceMap[utmSource] || utmSource;
